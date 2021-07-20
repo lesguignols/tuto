@@ -22,11 +22,6 @@ const adherentSchema = new Schema({
     secret_code: Number,
     administrateur: Boolean,
     superAdministrator: Boolean
-}, { collection: 'adherent' });
-
-adherentSchema.statics.findPrice = function(id_price) {
-    console.log("Ta mère la pute");
-    console.log(this.findById(id_price).populate('price').then(price => this.price))
-}
+}, { collection: 'adherent', versionKey: false });
 
 module.exports = mongoose.model('Adherent', adherentSchema);

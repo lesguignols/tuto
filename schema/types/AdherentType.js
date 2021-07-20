@@ -1,5 +1,4 @@
 const graphql = require('graphql');
-const adherent = require('../models/adherent');
 const price = require('../models/price');
 const PriceType = require('./PriceType');
 const training = require('../models/training');
@@ -39,7 +38,7 @@ const AdherentType = new GraphQLObjectType({
         code: { type: GraphQLInt },
         secret_code: { type: GraphQLInt },
         administrateur: { type: GraphQLBoolean },
-        superAdministrator: { type: GraphQLBoolean },
+        superAdministrator: { type: GraphQLBoolean }
     })
 });
 

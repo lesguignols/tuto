@@ -5,6 +5,6 @@ const trainingSchema = new mongoose.Schema({
     curriculum: String,
     wording: String,
     year: Number
-}, { collection: 'training' });
+}, { collection: 'training', versionKey: false });
 
 module.exports = mongoose.model('Training', trainingSchema);

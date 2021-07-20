@@ -5,6 +5,6 @@ const priceSchema = new mongoose.Schema({
     name: String,
     price: Number,
     active: Boolean
-}, { collection: 'price' });
+}, { collection: 'price', versionKey: false });
 
 module.exports = mongoose.model('Price', priceSchema);

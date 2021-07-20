@@ -5,6 +5,6 @@ const productSchema = new mongoose.Schema({
     barcode: String,
     name: String,
     selling_price: Number
-}, { collection: 'product' });
+}, { collection: 'product', versionKey: false });
 
 module.exports = mongoose.model('Product', productSchema);

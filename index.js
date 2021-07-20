@@ -7,12 +7,12 @@ const schema = require('./schema/index.js');
 const port = 4000;
 
 app.use(cors());
-app.get("/", (req, res) => {
+app.get("/hello", (req, res) => {
     res.send("Prêt à casser des mères?")
 })
 
 //API Rest
-const Price = require('./models/price');
+/**const Price = require('./models/price');
 app.get('/prices', async(req, res) => {
     const prices = await Price.find({})
     try {
@@ -30,11 +30,11 @@ app.get('/prices/:_id', async(req, res) => {
     } catch (e) {
         res.status(500).send(err);
     }
-})
+})*/
 
 //GraphQL UI
 app.use(
-    '/GraphQL',
+    '/',
     graphqlHTTP({
         schema: schema,
         graphiql: true

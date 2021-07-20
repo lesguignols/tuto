@@ -6,6 +6,6 @@ const providerSchema = new mongoose.Schema({
     address: String,
     phone: String,
     email: String
-}, { collection: 'provider' });
+}, { collection: 'provider', versionKey: false });
 
 module.exports = mongoose.model('Provider', providerSchema);
