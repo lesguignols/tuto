@@ -4,8 +4,6 @@ const {
     GraphQLObjectType,
     GraphQLString,
     GraphQLID,
-    GraphQLFloat,
-    GraphQLBoolean
 } = graphql;
 
 const ProviderType = new GraphQLObjectType({

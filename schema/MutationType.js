@@ -11,11 +11,13 @@ const Product = require('./models/product');
 const ProductType = require('./types/ProductType');
 const Provider = require('./models/provider');
 const ProviderType = require('./types/ProviderType');
-const Sale = require('./models/sale');
-const SaleType = require('./types/SaleType');
 const Training = require('./models/training');
 const TrainingType = require('./types/TrainingType');
-const LineSaleType = require('./types/LineSaleType');
+const Sale = require('./models/sale');
+const SaleType = require('./types/SaleType');
+const LineSaleInputType = require('./types/linesale/LineSaleInputType');
+const LineSale = require('./models/linesale');
+const LineSaleType = require('./types/linesale/LineSaleType');
 
 const {
     GraphQLObjectType,
@@ -504,66 +506,46 @@ const MutationType = new GraphQLObjectType({
         /**
          * 
          * 
-         * Mutation sale && lineSale
+         * Mutation sale
          * 
          * 
          */
         addSale: {
             type: SaleType,
             args: {
-                seller: { type: GraphQLID },
-                buyer: { type: GraphQLID },
-                products: { type: new GraphQLList(LineSaleType) },
+                seller: { type: GraphQLString },
+                buyer: { type: GraphQLString },
+                date: { type: GraphQLString },
+                products: { type: new GraphQLList(LineSaleInputType) },
                 price_tot: { type: GraphQLFloat }
             },
             resolve(parent, args) {
+                const productArray = JSON.parse(JSON.stringify(args.products));
+                var i = 0;
+                var linesale_id = [];
+                while (i < productArray.length) {
+                    let linesale = new LineSale({
+                        _id: mongoose.Types.ObjectId(),
+                        product: productArray[i].product,
+                        quantity: productArray[i].quantity,
+                        sum: productArray[i].sum
+                    })
+                    linesale.save();
+                    linesale_id.push(linesale._id);
+                    i++;
+                }
+                console.log(linesale_id)
                 let sale = new Sale({
                     _id: mongoose.Types.ObjectId(),
                     seller: args.seller,
                     buyer: args.buyer,
-                    products: args.products,
+                    date: args.date,
+                    products: linesale_id,
                     price_tot: args.price_tot
-                })
+                });
                 return sale.save()
             }
         },
-        /*addLineSale: {
-            type: LineSaleType,
-            args: {
-                product: { type: GraphQLID },
-                quantity: { type: GraphQLInt }
-            },
-            resolve(parent, args) {
-                var lineSale = new LineSale(Product.findById(args.product).exec(function(err, lineSale) {
-                    if (err) {
-                        return handleError(err);
-                    } else {
-                        var sum_tot = lineSale.selling_price * args.quantity;
-                        lineSale = new LineSale({
-                            _id: mongoose.Types.ObjectId(),
-                            product: args.product,
-                            quantity: args.quantity,
-                            sum: sum_tot
-                        });
-                        return lineSale.save();
-                    }
-                }))
-                return lineSale;
-                return LineSale.findById(lineSale._id);
-                /**Product.findById(args.product, function(err, product) {
-                    console.log(product)
-                    var sum_tot = product.selling_price * args.quantity;
-                    console.log(sum_tot)
-                    let lineSale = new LineSale({
-                        _id: mongoose.Types.ObjectId(),
-                        product: args.product,
-                        quantity: args.quantity,
-                        sum: sum_tot
-                    })
-                    return lineSale.save()
-                });
-            }
-        },*/
         /**
          * 
          * 

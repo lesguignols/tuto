@@ -13,6 +13,8 @@ const Adherent = require('./models/adherent');
 const AdherentType = require('./types/AdherentType');
 const CashFund = require('./models/cashfund');
 const CashFundType = require('./types/CashFundType');
+const Sale = require('./models/sale');
+const SaleType = require('./types/SaleType');
 
 const {
     GraphQLNonNull,
@@ -170,14 +172,14 @@ const RootQueryType = new GraphQLObjectType({
             type: new GraphQLList(CashFundType),
             args: { sum: { type: new GraphQLNonNull(GraphQLFloat) } },
             resolve(parent, args) {
-                return CashFund.find({ sum: { "$gte": args.sum } });
+                return CashFund.find({ sum: { "$gte": args.sum } }).sort({ sum: -1 });
             }
         },
         cashFundBySumLess: {
             type: new GraphQLList(CashFundType),
             args: { sum: { type: new GraphQLNonNull(GraphQLFloat) } },
             resolve(parent, args) {
-                return CashFund.find({ sum: { "$lte": args.sum } });
+                return CashFund.find({ sum: { "$lte": args.sum } }).sort({ sum: 1 });
             }
         },
         allCashFunds: {
@@ -265,6 +267,68 @@ const RootQueryType = new GraphQLObjectType({
             type: new GraphQLList(ProviderType),
             resolve(parent, args) {
                 return Provider.find({});
+            }
+        },
+        /**
+         * 
+         * 
+         * Query sale
+         * 
+         * 
+         */
+        saleBySeller: {
+            type: new GraphQLList(SaleType),
+            args: { seller: { type: new GraphQLNonNull(GraphQLString) } },
+            resolve(parent, args) {
+                return Sale.find({ seller: args.seller });
+            }
+        },
+        saleByBuyer: {
+            type: new GraphQLList(SaleType),
+            args: { buyer: { type: new GraphQLNonNull(GraphQLString) } },
+            resolve(parent, args) {
+                return Sale.find({ seller: args.buyer });
+            }
+        },
+        saleByPeriod: {
+            type: new GraphQLList(SaleType),
+            args: {
+                startDate: { type: new GraphQLNonNull(GraphQLString) },
+                endDate: { type: new GraphQLNonNull(GraphQLString) }
+            },
+            resolve(parent, args) {
+                if (args.endDate != "") {
+                    return Sale.find({ date: { "$gte": args.startDate, "$lte": args.endDate } })
+                } else {
+                    return Sale.find({ date: { "$gte": args.startDate, "$lte": args.startDate } })
+                }
+
+            }
+        },
+        saleByPriceGreater: {
+            type: new GraphQLList(SaleType),
+            args: {
+                price_tot: { type: new GraphQLNonNull(GraphQLFloat) }
+            },
+            resolve(parent, args) {
+                return Sale.find({ price_tot: { "$gte": args.price_tot } })
+
+            }
+        },
+        saleByPriceLess: {
+            type: new GraphQLList(SaleType),
+            args: {
+                price_tot: { type: new GraphQLNonNull(GraphQLFloat) }
+            },
+            resolve(parent, args) {
+                return Sale.find({ price_tot: { "$lte": args.price_tot } })
+
+            }
+        },
+        allSale: {
+            type: new GraphQLList(SaleType),
+            resolve(parent, args) {
+                return Sale.find({});
             }
         },
         /**
