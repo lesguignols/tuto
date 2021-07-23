@@ -32,7 +32,6 @@ const SaleType = new GraphQLObjectType({
         products: {
             type: new GraphQLList(LineSaleType),
             resolve(parentValue) {
-                console.log(parentValue.products)
                 return linesale.find({ _id: parentValue.products });
             }
         },

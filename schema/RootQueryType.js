@@ -1,20 +1,24 @@
 const graphql = require('graphql');
 const GraphQLDate = require('graphql-date');
 
-const Price = require('./models/price');
-const PriceType = require('./types/PriceType');
-const Training = require('./models/training');
-const TrainingType = require('./types/TrainingType');
-const Provider = require('./models/provider');
-const ProviderType = require('./types/ProviderType');
-const Product = require('./models/product');
-const ProductType = require('./types/ProductType');
 const Adherent = require('./models/adherent');
 const AdherentType = require('./types/AdherentType');
 const CashFund = require('./models/cashfund');
 const CashFundType = require('./types/CashFundType');
+const Price = require('./models/price');
+const PriceType = require('./types/PriceType');
+const Provider = require('./models/provider');
+const ProviderType = require('./types/ProviderType');
+const Product = require('./models/product');
+const ProductType = require('./types/ProductType');
 const Sale = require('./models/sale');
 const SaleType = require('./types/SaleType');
+const Training = require('./models/training');
+const TrainingType = require('./types/TrainingType');
+const SlipCoinsType = require('./types/slip/SlipCoinsType');
+const SlipCoins = require('./models/slip/slipcoins');
+const SlipTicket = require('./models/slip/slipticket');
+const SlipTicketType = require('./types/slip/SlipTicketType');
 
 const {
     GraphQLNonNull,
@@ -334,7 +338,126 @@ const RootQueryType = new GraphQLObjectType({
         /**
          * 
          * 
-         * Query Training
+         * Query slip
+         * 
+         * 
+         */
+        slipCoinsByPeriod: {
+            type: new GraphQLList(SlipCoinsType),
+            args: {
+                startDate: { type: new GraphQLNonNull(GraphQLString) },
+                endDate: { type: new GraphQLNonNull(GraphQLString) }
+            },
+            resolve(parent, args) {
+                if (args.endDate != "") {
+                    return SlipCoins.find({ date: { "$gte": args.startDate, "$lte": args.endDate } })
+                } else {
+                    return SlipCoins.find({ date: { "$gte": args.startDate, "$lte": args.startDate } })
+                }
+            }
+        },
+        slipCoinsByMember: {
+            type: new GraphQLList(SlipCoinsType),
+            args: {
+                member: { type: new GraphQLNonNull(GraphQLString) }
+            },
+            resolve(parent, args) {
+                return SlipCoins.find({ member: args.member });
+            }
+        },
+        slipCoinsByTotalAmountGreater: {
+            type: new GraphQLList(SlipCoinsType),
+            args: {
+                total_amount: { type: new GraphQLNonNull(GraphQLFloat) }
+            },
+            resolve(parent, args) {
+                return SlipCoins.find({ total_amount: { "$gte": args.total_amount } })
+            }
+        },
+        slipCoinsByTotalAmountLess: {
+            type: new GraphQLList(SlipCoinsType),
+            args: {
+                total_amount: { type: new GraphQLNonNull(GraphQLFloat) }
+            },
+            resolve(parent, args) {
+                return SlipCoins.find({ total_amount: { "$lte": args.total_amount } })
+            }
+        },
+        slipCoinsByNumSlip: {
+            type: new GraphQLList(SlipCoinsType),
+            args: {
+                num_slip: { type: new GraphQLNonNull(GraphQLString) }
+            },
+            resolve(parent, args) {
+                return SlipCoins.find({ num_slip: { "$gte": args.num_slip } })
+            }
+        },
+        allSlipCoins: {
+            type: new GraphQLList(SlipCoinsType),
+            resolve(parent, args) {
+                return SlipCoins.find({});
+            }
+        },
+        slipTicketByPeriod: {
+            type: new GraphQLList(SlipTicketType),
+            args: {
+                startDate: { type: new GraphQLNonNull(GraphQLString) },
+                endDate: { type: new GraphQLNonNull(GraphQLString) }
+            },
+            resolve(parent, args) {
+                if (args.endDate != "") {
+                    return SlipTicket.find({ date: { "$gte": args.startDate, "$lte": args.endDate } })
+                } else {
+                    return SlipTicket.find({ date: { "$gte": args.startDate, "$lte": args.startDate } })
+                }
+            }
+        },
+        slipTicketByMember: {
+            type: new GraphQLList(SlipTicketType),
+            args: {
+                member: { type: new GraphQLNonNull(GraphQLString) }
+            },
+            resolve(parent, args) {
+                return SlipTicket.find({ member: args.member });
+            }
+        },
+        slipTicketByTotalAmountGreater: {
+            type: new GraphQLList(SlipTicketType),
+            args: {
+                total_amount: { type: new GraphQLNonNull(GraphQLFloat) }
+            },
+            resolve(parent, args) {
+                return SlipTicket.find({ total_amount: { "$gte": args.total_amount } })
+            }
+        },
+        slipTicketByTotalAmountLess: {
+            type: new GraphQLList(SlipTicketType),
+            args: {
+                total_amount: { type: new GraphQLNonNull(GraphQLFloat) }
+            },
+            resolve(parent, args) {
+                return SlipTicket.find({ total_amount: { "$lte": args.total_amount } })
+            }
+        },
+        slipTicketByNumSlip: {
+            type: new GraphQLList(SlipTicketType),
+            args: {
+                num_slip: { type: new GraphQLNonNull(GraphQLString) }
+            },
+            resolve(parent, args) {
+                return SlipTicket.find({ num_slip: { "$gte": args.num_slip } })
+            }
+        },
+        allSlipTicket: {
+            type: new GraphQLList(SlipTicketType),
+            resolve(parent, args) {
+                return SlipTicket.find({});
+            }
+        },
+        /**
+         * 
+         * 
+         * Query training
          * 
          * 
          */

@@ -15,9 +15,13 @@ const Training = require('./models/training');
 const TrainingType = require('./types/TrainingType');
 const Sale = require('./models/sale');
 const SaleType = require('./types/SaleType');
-const LineSaleInputType = require('./types/linesale/LineSaleInputType');
 const LineSale = require('./models/linesale');
-const LineSaleType = require('./types/linesale/LineSaleType');
+const LineSaleInputType = require('./types/linesale/LineSaleInputType');
+const SlipCoins = require('./models/slip/slipcoins');
+const SlipCoinsType = require('./types/slip/SlipCoinsType');
+const SlipTicket = require('./models/slip/slipticket');
+const SlipTicketType = require('./types/slip/SlipTicketType')
+
 
 const {
     GraphQLObjectType,
@@ -544,6 +548,113 @@ const MutationType = new GraphQLObjectType({
                     price_tot: args.price_tot
                 });
                 return sale.save()
+            }
+        },
+        /**
+         * 
+         * 
+         * Mutation slip
+         * 
+         * 
+         */
+        addSlipCoins: {
+            type: SlipCoinsType,
+            args: {
+                date: { type: GraphQLString },
+                member: { type: GraphQLID },
+                num_slip: { type: GraphQLString },
+                two: { type: GraphQLFloat },
+                one: { type: GraphQLFloat },
+                fiftycents: { type: GraphQLFloat },
+                twentycents: { type: GraphQLFloat },
+                tencents: { type: GraphQLFloat },
+                fivecents: { type: GraphQLFloat },
+                twocents: { type: GraphQLFloat },
+                onecents: { type: GraphQLFloat }
+            },
+            resolve(parent, args) {
+                var total_amount = 0;
+                if (args.two) {
+                    total_amount += args.two * 2;
+                }
+                if (args.one) {
+                    total_amount += args.one * 1;
+                }
+                if (args.fiftycents) {
+                    total_amount += args.fiftycents * 0.5;
+                }
+                if (args.twentycents) {
+                    total_amount += args.twentycents * 0.2;
+                }
+                if (args.tencents) {
+                    total_amount += args.tencents * 0.1;
+                }
+                if (args.fivecents) {
+                    total_amount += args.fivecents * 0.05;
+                }
+                if (args.twocents) {
+                    total_amount += args.twocents * 0.02;
+                }
+                if (args.onecents) {
+                    total_amount += args.onecents * 0.01;
+                }
+                total_amount = Number.parseFloat(total_amount).toFixed(2);
+                let slipcoins = new SlipCoins({
+                    _id: mongoose.Types.ObjectId(),
+                    date: args.date,
+                    member: args.member,
+                    num_slip: args.num_slip,
+                    total_amount: total_amount,
+                    two: args.two,
+                    one: args.one,
+                    fiftycents: args.fiftycents,
+                    twentycents: args.twentycents,
+                    tencents: args.tencents,
+                    fivecents: args.fivecents,
+                    twocents: args.twocents,
+                    onecents: args.onecents
+                })
+                return slipcoins.save()
+            }
+        },
+        addSlipTicket: {
+            type: SlipTicketType,
+            args: {
+                date: { type: GraphQLString },
+                member: { type: GraphQLID },
+                num_slip: { type: GraphQLString },
+                fifty: { type: GraphQLFloat },
+                twenty: { type: GraphQLFloat },
+                ten: { type: GraphQLFloat },
+                five: { type: GraphQLFloat }
+            },
+            resolve(parent, args) {
+                var total_amount = 0;
+                if (args.fifty) {
+                    total_amount += args.fifty * 50;
+                }
+                if (args.twenty) {
+                    total_amount += args.twenty * 20;
+                }
+                if (args.ten) {
+                    total_amount += args.ten * 10;
+                }
+                if (args.five) {
+                    total_amount += args.five * 5;
+                }
+                total_amount = Number.parseFloat(total_amount).toFixed(2);
+                let slipticket = new SlipTicket({
+                    _id: mongoose.Types.ObjectId(),
+                    date: args.date,
+                    member: args.member,
+                    num_slip: args.num_slip,
+                    total_amount: total_amount,
+                    fifty: args.fifty,
+                    twenty: args.twenty,
+                    ten: args.ten,
+                    five: args.five
+                })
+                return slipticket.save()
             }
         },
         /**
