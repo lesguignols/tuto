@@ -9,8 +9,8 @@ const {
     GraphQLFloat
 } = graphql;
 
-const LineSaleType = new GraphQLObjectType({
-    name: 'LineSale',
+const LineBillType = new GraphQLObjectType({
+    name: 'LineBill',
     fields: () => ({
         _id: { type: GraphQLID },
         product: {
@@ -20,8 +20,10 @@ const LineSaleType = new GraphQLObjectType({
             }
         },
         quantity: { type: GraphQLInt },
-        sum: { type: GraphQLFloat }
+        price_unit: { type: GraphQLFloat },
+        tva: { type: GraphQLFloat },
+        price_line: { type: GraphQLFloat }
     })
 });
 
-module.exports = LineSaleType;
+module.exports = LineBillType;

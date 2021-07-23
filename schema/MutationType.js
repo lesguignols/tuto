@@ -20,7 +20,11 @@ const LineSaleInputType = require('./types/linesale/LineSaleInputType');
 const SlipCoins = require('./models/slip/slipcoins');
 const SlipCoinsType = require('./types/slip/SlipCoinsType');
 const SlipTicket = require('./models/slip/slipticket');
-const SlipTicketType = require('./types/slip/SlipTicketType')
+const SlipTicketType = require('./types/slip/SlipTicketType');
+const Bill = require('./models/bill');
+const BillType = require('./types/BillType');
+const LineBill = require('./models/linebill');
+const LineBillInputType = require('./types/linebill/LineBillInputType');
 
 
 const {
@@ -254,6 +258,52 @@ const MutationType = new GraphQLObjectType({
                 } else {
                     return Adherent.findById(args._id);
                 }
+            }
+        },
+        /**
+         * 
+         * 
+         * Mutation bill
+         * 
+         * 
+         */
+        addBill: {
+            type: BillType,
+            args: {
+                member: { type: GraphQLID },
+                date: { type: GraphQLString },
+                provider: { type: GraphQLID },
+                products: { type: new GraphQLList(LineBillInputType) },
+            },
+            resolve(parent, args) {
+                const productArray = JSON.parse(JSON.stringify(args.products));
+                var price_tot = 0;
+                var i = 0;
+                var linebill_id = [];
+                while (i < productArray.length) {
+                    var price_line = productArray[i].price_unit * productArray[i].quantity + (productArray[i].price_unit * productArray[i].quantity) * productArray[i].tva / 100;
+                    let lineBill = new LineBill({
+                        _id: mongoose.Types.ObjectId(),
+                        product: productArray[i].product,
+                        quantity: productArray[i].quantity,
+                        price_unit: productArray[i].price_unit,
+                        tva: productArray[i].tva,
+                        price_line: price_line
+                    })
+                    lineBill.save();
+                    linebill_id.push(lineBill._id);
+                    price_tot += price_line;
+                    i++;
+                }
+                let bill = new Bill({
+                    _id: mongoose.Types.ObjectId(),
+                    member: args.member,
+                    date: args.date,
+                    provider: args.provider,
+                    products: linebill_id,
+                    price_tot: price_tot
+                });
+                return bill.save()
             }
         },
         /**
@@ -538,7 +588,6 @@ const MutationType = new GraphQLObjectType({
                     linesale_id.push(linesale._id);
                     i++;
                 }
-                console.log(linesale_id)
                 let sale = new Sale({
                     _id: mongoose.Types.ObjectId(),
                     seller: args.seller,
