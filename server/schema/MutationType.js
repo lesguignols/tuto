@@ -14,8 +14,8 @@ const CashFundType = require('./types/CashFundType');
 
 const Offer = require('./models/offer');
 const OfferType = require('./types/OfferType');
-const ProductMap = require('./models/productmap');
-const ProductMapInputType = require('./types/productmap/ProductMapInputType');
+const ProductOffer = require('./models/productoffer');
+const ProductOfferInputType = require('./types/productoffer/ProductOfferInputType');
 
 const Price = require('./models/price');
 const PriceType = require('./types/PriceType');
@@ -400,7 +400,7 @@ const MutationType = new GraphQLObjectType({
                     description: "Correspond au prix de l'offre."
                 },
                 products: {
-                    type: new GraphQLNonNull(new GraphQLList(ProductMapInputType)),
+                    type: new GraphQLNonNull(new GraphQLList(ProductOfferInputType)),
                     description: "Liste contenant les identifiants des produits qui concerne l'offre.",
                 },
                 daily: {
@@ -423,15 +423,15 @@ const MutationType = new GraphQLObjectType({
             resolve(parent, args) {
                 const productArray = JSON.parse(JSON.stringify(args.products));
                 var i = 0;
-                var productmap_id = [];
+                var productoffer_id = [];
                 while (i < productArray.length) {
-                    let productmap = new ProductMap({
+                    let productoffer = new ProductOffer({
                         _id: mongoose.Types.ObjectId(),
                         product: productArray[i].product,
                         quantity: productArray[i].quantity
                     })
-                    productmap.save();
-                    productmap_id.push(productmap._id);
+                    productoffer.save();
+                    productoffer_id.push(productoffer._id);
                     i++;
                 }
                 let offer = new Offer({
@@ -439,7 +439,7 @@ const MutationType = new GraphQLObjectType({
                     name: args.name,
                     active: args.active,
                     price: args.price,
-                    products: productmap_id,
+                    products: productoffer_id,
                     daily: args.daily,
                     members_exclusivity: args.members_exclusivity,
                     startOffer: args.startOffer,
@@ -472,7 +472,7 @@ const MutationType = new GraphQLObjectType({
             type: OfferType,
             args: {
                 _id: { type: new GraphQLNonNull(GraphQLString) },
-                products: { type: new GraphQLNonNull(new GraphQLList(ProductMapInputType)) }
+                products: { type: new GraphQLNonNull(new GraphQLList(ProductOfferInputType)) }
             },
             resolve(parent, args) {
                 const productArray = JSON.parse(JSON.stringify(args.products));

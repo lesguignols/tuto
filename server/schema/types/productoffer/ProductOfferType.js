@@ -8,9 +8,9 @@ const {
     GraphQLInt
 } = graphql;
 
-const ProductMapType = new GraphQLObjectType({
-    name: 'ProductMap',
-    description: "ProductMapType correspond aux objets de type Map_produit.",
+const ProductOfferType = new GraphQLObjectType({
+    name: 'ProductOffer',
+    description: "ProductOfferType correspond aux objets de type Produit_dans_l'offre.",
     fields: () => ({
         _id: {
             type: GraphQLID,
@@ -18,16 +18,16 @@ const ProductMapType = new GraphQLObjectType({
         },
         product: {
             type: ProductType,
-            description: "Correspond à l'identifiant du produit de Map_produit.",
+            description: "Correspond à l'identifiant du produit dans l'offre.",
             resolve(parentValue) {
                 return product.findById(parentValue.product)
             }
         },
         quantity: {
             type: GraphQLInt,
-            description: "Correspond à la quantité de produits de Map_produit."
+            description: "Correspond à la quantité de produits dans l'offre."
         }
     })
 });
 
-module.exports = ProductMapType;
+module.exports = ProductOfferType;

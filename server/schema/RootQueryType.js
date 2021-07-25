@@ -12,7 +12,7 @@ const CashFundType = require('./types/CashFundType');
 
 const Offer = require('./models/offer');
 const OfferType = require('./types/OfferType');
-const ProductMap = require('./models/productmap');
+const ProductMap = require('./models/productoffer');
 
 const Price = require('./models/price');
 const PriceType = require('./types/PriceType');

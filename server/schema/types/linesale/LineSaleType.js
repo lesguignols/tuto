@@ -1,6 +1,6 @@
 const graphql = require('graphql');
 const product = require('../../models/product');
-const ProductType = require('../ProductType');
+const ProductType = require('..//ProductType');
 
 const {
     GraphQLObjectType,

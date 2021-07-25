@@ -1,6 +1,6 @@
 const graphql = require('graphql');
-const productmap = require('../models/productmap');
-const ProductMapType = require('./productmap/ProductMapType');
+const productmap = require('../models/productoffer');
+const ProductMapType = require('./productoffer/ProductOfferType');
 
 const {
     GraphQLObjectType,

@@ -3,11 +3,11 @@ const cors = require('cors');
 const app = express();
 const mongoDBClient = require('./mongoClient');
 const { graphqlHTTP } = require('express-graphql');
-const schema = require('./schema/index.js');
+const schema = require('./server/schema/index');
 const port = 4000;
 
 app.use(cors());
-app.get("/hello", (req, res) => {
+app.get("/", (req, res) => {
     res.send("Prêt à casser des mères?")
 })
 
