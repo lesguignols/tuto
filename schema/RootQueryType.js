@@ -3,24 +3,35 @@ const GraphQLDate = require('graphql-date');
 
 const Adherent = require('./models/adherent');
 const AdherentType = require('./types/AdherentType');
+
+const Bill = require('./models/bill');
+const BillType = require('./types/BillType');
+
 const CashFund = require('./models/cashfund');
 const CashFundType = require('./types/CashFundType');
+
 const Price = require('./models/price');
 const PriceType = require('./types/PriceType');
-const Provider = require('./models/provider');
-const ProviderType = require('./types/ProviderType');
+
 const Product = require('./models/product');
 const ProductType = require('./types/ProductType');
+
+const Provider = require('./models/provider');
+const ProviderType = require('./types/ProviderType');
+
+const Reduction = require('./models/reduction');
+const ReductionType = require('./types/ReductionType');
+
 const Sale = require('./models/sale');
 const SaleType = require('./types/SaleType');
-const Training = require('./models/training');
-const TrainingType = require('./types/TrainingType');
+
 const SlipCoinsType = require('./types/slip/SlipCoinsType');
 const SlipCoins = require('./models/slip/slipcoins');
 const SlipTicket = require('./models/slip/slipticket');
 const SlipTicketType = require('./types/slip/SlipTicketType');
-const Bill = require('./models/bill');
-const BillType = require('./types/BillType');
+
+const Training = require('./models/training');
+const TrainingType = require('./types/TrainingType');
 
 const {
     GraphQLNonNull,
@@ -329,6 +340,27 @@ const RootQueryType = new GraphQLObjectType({
             type: new GraphQLList(ProviderType),
             resolve(parent, args) {
                 return Provider.find({});
+            }
+        },
+        /**
+         * 
+         * 
+         * Query reduction
+         * 
+         * 
+         */
+        reductionByActive: {
+            type: new GraphQLList(ReductionType),
+            args: { active: { type: new GraphQLNonNull(GraphQLBoolean) } },
+            resolve(parent, args) {
+                return Reduction.find({ active: args.active });
+            }
+        },
+        reductionByProducts: {
+            type: new GraphQLList(ReductionType),
+            args: { products: { type: new GraphQLNonNull(new GraphQLList(GraphQLString)) } },
+            resolve(parent, args) {
+                return Reduction.find({ products: { "$in": args.products } });
             }
         },
         /**

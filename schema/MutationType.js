@@ -3,28 +3,39 @@ const mongoose = require('mongoose');
 
 const Adherent = require('./models/adherent');
 const AdherentType = require('./types/AdherentType');
-const CashFund = require('./models/cashfund');
-const CashFundType = require('./types/CashFundType');
-const Price = require('./models/price');
-const PriceType = require('./types/PriceType');
-const Product = require('./models/product');
-const ProductType = require('./types/ProductType');
-const Provider = require('./models/provider');
-const ProviderType = require('./types/ProviderType');
-const Training = require('./models/training');
-const TrainingType = require('./types/TrainingType');
-const Sale = require('./models/sale');
-const SaleType = require('./types/SaleType');
-const LineSale = require('./models/linesale');
-const LineSaleInputType = require('./types/linesale/LineSaleInputType');
-const SlipCoins = require('./models/slip/slipcoins');
-const SlipCoinsType = require('./types/slip/SlipCoinsType');
-const SlipTicket = require('./models/slip/slipticket');
-const SlipTicketType = require('./types/slip/SlipTicketType');
+
 const Bill = require('./models/bill');
 const BillType = require('./types/BillType');
 const LineBill = require('./models/linebill');
 const LineBillInputType = require('./types/linebill/LineBillInputType');
+
+const CashFund = require('./models/cashfund');
+const CashFundType = require('./types/CashFundType');
+
+const Price = require('./models/price');
+const PriceType = require('./types/PriceType');
+
+const Product = require('./models/product');
+const ProductType = require('./types/ProductType');
+
+const Provider = require('./models/provider');
+const ProviderType = require('./types/ProviderType');
+
+const Reduction = require('./models/reduction');
+const ReductionType = require('./types/ReductionType');
+
+const Sale = require('./models/sale');
+const SaleType = require('./types/SaleType');
+const LineSale = require('./models/linesale');
+const LineSaleInputType = require('./types/linesale/LineSaleInputType');
+
+const SlipCoins = require('./models/slip/slipcoins');
+const SlipCoinsType = require('./types/slip/SlipCoinsType');
+const SlipTicket = require('./models/slip/slipticket');
+const SlipTicketType = require('./types/slip/SlipTicketType');
+
+const Training = require('./models/training');
+const TrainingType = require('./types/TrainingType');
 
 
 const {
@@ -271,7 +282,6 @@ const MutationType = new GraphQLObjectType({
             type: BillType,
             args: {
                 member: { type: GraphQLID },
-                date: { type: GraphQLString },
                 provider: { type: GraphQLID },
                 products: { type: new GraphQLList(LineBillInputType) },
             },
@@ -295,10 +305,12 @@ const MutationType = new GraphQLObjectType({
                     price_tot += price_line;
                     i++;
                 }
+                let today = new Date();
+                let date = parseInt(today.getMonth() + 1) + "-" + today.getDate() + "-" + today.getFullYear();
                 let bill = new Bill({
                     _id: mongoose.Types.ObjectId(),
                     member: args.member,
-                    date: args.date,
+                    date: date,
                     provider: args.provider,
                     products: linebill_id,
                     price_tot: price_tot
@@ -316,7 +328,6 @@ const MutationType = new GraphQLObjectType({
         addCashFund: {
             type: CashFundType,
             args: {
-                date: { type: GraphQLString },
                 member: { type: GraphQLID },
                 fifty: { type: GraphQLFloat },
                 twenty: { type: GraphQLFloat },
@@ -335,9 +346,11 @@ const MutationType = new GraphQLObjectType({
                 var sum = args.fifty * 50 + args.twenty * 20 + args.ten * 10 + args.five * 5 + args.two * 2 + args.one * 1 + args.fiftycents * 0.5 + args.twentycents * 0.2 +
                     args.tencents * 0.1 + args.fivecents * 0.05 + args.twocents * 0.02 + args.onecents * 0.01;
                 sum = Number.parseFloat(sum).toFixed(2);
+                let today = new Date();
+                let date = parseInt(today.getMonth() + 1) + "-" + today.getDate() + "-" + today.getFullYear();
                 let cashfund = new CashFund({
                     _id: mongoose.Types.ObjectId(),
-                    date: args.date,
+                    date: date,
                     member: args.member,
                     sum: sum,
                     fifty: args.fifty,
@@ -560,6 +573,72 @@ const MutationType = new GraphQLObjectType({
         /**
          * 
          * 
+         * Mutation reduction
+         * 
+         * 
+         */
+        addReduction: {
+            type: ReductionType,
+            args: {
+                name: { type: GraphQLString },
+                active: { type: GraphQLBoolean },
+                rate: { type: GraphQLFloat },
+                products: { type: new GraphQLList(GraphQLID) }
+            },
+            resolve(parent, args) {
+                let reduction = new Reduction({
+                    _id: mongoose.Types.ObjectId(),
+                    name: args.name,
+                    active: args.active,
+                    rate: args.rate,
+                    products: args.products
+                })
+                return reduction.save()
+            }
+        },
+        updateNameReduction: {
+            type: ReductionType,
+            args: {
+                _id: { type: new GraphQLNonNull(GraphQLString) },
+                name: { type: new GraphQLNonNull(GraphQLString) }
+            },
+            resolve(parent, args) {
+                return Reduction.findByIdAndUpdate(args._id, { $set: { "name": args.name } }, { new: true, useFindAndModify: false });
+            }
+        },
+        updateActiveReduction: {
+            type: ReductionType,
+            args: {
+                _id: { type: new GraphQLNonNull(GraphQLString) },
+                active: { type: new GraphQLNonNull(GraphQLBoolean) }
+            },
+            resolve(parent, args) {
+                return Reduction.findByIdAndUpdate(args._id, { $set: { "active": args.active } }, { new: true, useFindAndModify: false });
+            }
+        },
+        addProductsReduction: {
+            type: ReductionType,
+            args: {
+                _id: { type: new GraphQLNonNull(GraphQLString) },
+                products: { type: new GraphQLNonNull(new GraphQLList(GraphQLString)) }
+            },
+            resolve(parent, args) {
+                return Reduction.findByIdAndUpdate(args._id, { $push: { "products": args.products } }, { new: true, useFindAndModify: false });
+            }
+        },
+        removeProductsReduction: {
+            type: ReductionType,
+            args: {
+                _id: { type: new GraphQLNonNull(GraphQLString) },
+                products: { type: new GraphQLNonNull(new GraphQLList(GraphQLString)) }
+            },
+            resolve(parent, args) {
+                return Reduction.findByIdAndUpdate(args._id, { $pullAll: { "products": args.products } }, { new: true, useFindAndModify: false });
+            }
+        },
+        /**
+         * 
+         * 
          * Mutation sale
          * 
          * 
@@ -569,7 +648,6 @@ const MutationType = new GraphQLObjectType({
             args: {
                 seller: { type: GraphQLString },
                 buyer: { type: GraphQLString },
-                date: { type: GraphQLString },
                 products: { type: new GraphQLList(LineSaleInputType) },
                 price_tot: { type: GraphQLFloat }
             },
@@ -588,11 +666,13 @@ const MutationType = new GraphQLObjectType({
                     linesale_id.push(linesale._id);
                     i++;
                 }
+                let today = new Date();
+                let date = parseInt(today.getMonth() + 1) + "-" + today.getDate() + "-" + today.getFullYear();
                 let sale = new Sale({
                     _id: mongoose.Types.ObjectId(),
                     seller: args.seller,
                     buyer: args.buyer,
-                    date: args.date,
+                    date: date,
                     products: linesale_id,
                     price_tot: args.price_tot
                 });
@@ -609,7 +689,6 @@ const MutationType = new GraphQLObjectType({
         addSlipCoins: {
             type: SlipCoinsType,
             args: {
-                date: { type: GraphQLString },
                 member: { type: GraphQLID },
                 num_slip: { type: GraphQLString },
                 two: { type: GraphQLFloat },
@@ -648,9 +727,11 @@ const MutationType = new GraphQLObjectType({
                     total_amount += args.onecents * 0.01;
                 }
                 total_amount = Number.parseFloat(total_amount).toFixed(2);
+                let today = new Date();
+                let date = parseInt(today.getMonth() + 1) + "-" + today.getDate() + "-" + today.getFullYear();
                 let slipcoins = new SlipCoins({
                     _id: mongoose.Types.ObjectId(),
-                    date: args.date,
+                    date: date,
                     member: args.member,
                     num_slip: args.num_slip,
                     total_amount: total_amount,
@@ -669,7 +750,6 @@ const MutationType = new GraphQLObjectType({
         addSlipTicket: {
             type: SlipTicketType,
             args: {
-                date: { type: GraphQLString },
                 member: { type: GraphQLID },
                 num_slip: { type: GraphQLString },
                 fifty: { type: GraphQLFloat },
@@ -692,9 +772,11 @@ const MutationType = new GraphQLObjectType({
                     total_amount += args.five * 5;
                 }
                 total_amount = Number.parseFloat(total_amount).toFixed(2);
+                let today = new Date();
+                let date = parseInt(today.getMonth() + 1) + "-" + today.getDate() + "-" + today.getFullYear();
                 let slipticket = new SlipTicket({
                     _id: mongoose.Types.ObjectId(),
-                    date: args.date,
+                    date: date,
                     member: args.member,
                     num_slip: args.num_slip,
                     total_amount: total_amount,
