@@ -15,7 +15,7 @@ const billSchema = new Schema({
     },
     products: {
         type: [Schema.Types.ObjectId],
-        ref: 'billsale'
+        ref: 'linebill'
     },
     price_tot: Number
 }, { collection: 'bill', versionKey: false });

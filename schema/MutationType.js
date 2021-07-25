@@ -12,6 +12,11 @@ const LineBillInputType = require('./types/linebill/LineBillInputType');
 const CashFund = require('./models/cashfund');
 const CashFundType = require('./types/CashFundType');
 
+const Offer = require('./models/offer');
+const OfferType = require('./types/OfferType');
+const ProductMap = require('./models/productmap');
+const ProductMapInputType = require('./types/productmap/ProductMapInputType');
+
 const Price = require('./models/price');
 const PriceType = require('./types/PriceType');
 
@@ -28,6 +33,9 @@ const Sale = require('./models/sale');
 const SaleType = require('./types/SaleType');
 const LineSale = require('./models/linesale');
 const LineSaleInputType = require('./types/linesale/LineSaleInputType');
+
+const Settings = require('./models/settings');
+const SettingsType = require('./types/SettingsType');
 
 const SlipCoins = require('./models/slip/slipcoins');
 const SlipCoinsType = require('./types/slip/SlipCoinsType');
@@ -62,12 +70,12 @@ const MutationType = new GraphQLObjectType({
         addAdherent: {
             type: AdherentType,
             args: {
-                card: { type: GraphQLString },
-                name: { type: GraphQLString },
-                firstName: { type: GraphQLString },
-                email: { type: GraphQLString },
-                price: { type: GraphQLID },
-                training: { type: GraphQLID }
+                card: { type: new GraphQLNonNull(GraphQLString) },
+                name: { type: new GraphQLNonNull(GraphQLString) },
+                firstName: { type: new GraphQLNonNull(GraphQLString) },
+                email: { type: new GraphQLNonNull(GraphQLString) },
+                price: { type: new GraphQLNonNull(GraphQLID) },
+                training: { type: new GraphQLNonNull(GraphQLID) }
             },
             resolve(parent, args) {
                 let adherent = new Adherent({
@@ -93,7 +101,7 @@ const MutationType = new GraphQLObjectType({
             type: AdherentType,
             args: {
                 _id: { type: new GraphQLNonNull(GraphQLString) },
-                card: { type: GraphQLString }
+                card: { type: new GraphQLNonNull(GraphQLString) }
             },
             resolve(parent, args) {
                 if (args.card != "") {
@@ -107,7 +115,7 @@ const MutationType = new GraphQLObjectType({
             type: AdherentType,
             args: {
                 _id: { type: new GraphQLNonNull(GraphQLString) },
-                name: { type: GraphQLString }
+                name: { type: new GraphQLNonNull(GraphQLString) }
             },
             resolve(parent, args) {
                 if (args.name != "") {
@@ -121,7 +129,7 @@ const MutationType = new GraphQLObjectType({
             type: AdherentType,
             args: {
                 _id: { type: new GraphQLNonNull(GraphQLString) },
-                firstName: { type: GraphQLString }
+                firstName: { type: new GraphQLNonNull(GraphQLString) }
             },
             resolve(parent, args) {
                 if (args.firstName != "") {
@@ -135,7 +143,7 @@ const MutationType = new GraphQLObjectType({
             type: AdherentType,
             args: {
                 _id: { type: new GraphQLNonNull(GraphQLString) },
-                link_photo: { type: GraphQLString }
+                link_photo: { type: new GraphQLNonNull(GraphQLString) }
             },
             resolve(parent, args) {
                 if (args.link_photo != "") {
@@ -149,7 +157,7 @@ const MutationType = new GraphQLObjectType({
             type: AdherentType,
             args: {
                 _id: { type: new GraphQLNonNull(GraphQLString) },
-                email: { type: GraphQLString }
+                email: { type: new GraphQLNonNull(GraphQLString) }
             },
             resolve(parent, args) {
                 if (args.email != "") {
@@ -163,7 +171,7 @@ const MutationType = new GraphQLObjectType({
             type: AdherentType,
             args: {
                 _id: { type: new GraphQLNonNull(GraphQLString) },
-                price: { type: GraphQLID }
+                price: { type: new GraphQLNonNull(GraphQLID) }
             },
             resolve(parent, args) {
                 if (args.price != "") {
@@ -177,7 +185,7 @@ const MutationType = new GraphQLObjectType({
             type: AdherentType,
             args: {
                 _id: { type: new GraphQLNonNull(GraphQLString) },
-                training: { type: GraphQLID }
+                training: { type: new GraphQLNonNull(GraphQLID) }
             },
             resolve(parent, args) {
                 if (args.training != "") {
@@ -191,7 +199,7 @@ const MutationType = new GraphQLObjectType({
             type: AdherentType,
             args: {
                 _id: { type: new GraphQLNonNull(GraphQLString) },
-                active: { type: GraphQLBoolean }
+                active: { type: new GraphQLNonNull(GraphQLBoolean) }
             },
             resolve(parent, args) {
                 if (args.active != null) {
@@ -205,7 +213,7 @@ const MutationType = new GraphQLObjectType({
             type: AdherentType,
             args: {
                 _id: { type: new GraphQLNonNull(GraphQLString) },
-                member: { type: GraphQLBoolean }
+                member: { type: new GraphQLNonNull(GraphQLBoolean) }
             },
             resolve(parent, args) {
                 if (args.member != null) {
@@ -243,15 +251,15 @@ const MutationType = new GraphQLObjectType({
                 }
             }
         },
-        updateAdministrateurAdherent: {
+        updateAdministratorAdherent: {
             type: AdherentType,
             args: {
                 _id: { type: new GraphQLNonNull(GraphQLString) },
-                administrateur: { type: GraphQLBoolean }
+                administrator: { type: new GraphQLNonNull(GraphQLBoolean) }
             },
             resolve(parent, args) {
-                if (args.administrateur != null) {
-                    return Adherent.findByIdAndUpdate(args._id, { $set: { "administrateur": args.administrateur } }, { new: true, useFindAndModify: false });
+                if (args.administrator != null) {
+                    return Adherent.findByIdAndUpdate(args._id, { $set: { "administrator": args.administrator } }, { new: true, useFindAndModify: false });
                 } else {
                     return Adherent.findById(args._id);
                 }
@@ -261,7 +269,7 @@ const MutationType = new GraphQLObjectType({
             type: AdherentType,
             args: {
                 _id: { type: new GraphQLNonNull(GraphQLString) },
-                superAdministrator: { type: GraphQLBoolean }
+                superAdministrator: { type: new GraphQLNonNull(GraphQLBoolean) }
             },
             resolve(parent, args) {
                 if (args.superAdministrator != null) {
@@ -281,9 +289,9 @@ const MutationType = new GraphQLObjectType({
         addBill: {
             type: BillType,
             args: {
-                member: { type: GraphQLID },
-                provider: { type: GraphQLID },
-                products: { type: new GraphQLList(LineBillInputType) },
+                member: { type: new GraphQLNonNull(GraphQLID) },
+                provider: { type: new GraphQLNonNull(GraphQLID) },
+                products: { type: new GraphQLNonNull(new GraphQLList(LineBillInputType)) },
             },
             resolve(parent, args) {
                 const productArray = JSON.parse(JSON.stringify(args.products));
@@ -328,19 +336,19 @@ const MutationType = new GraphQLObjectType({
         addCashFund: {
             type: CashFundType,
             args: {
-                member: { type: GraphQLID },
-                fifty: { type: GraphQLFloat },
-                twenty: { type: GraphQLFloat },
-                ten: { type: GraphQLFloat },
-                five: { type: GraphQLFloat },
-                two: { type: GraphQLFloat },
-                one: { type: GraphQLFloat },
-                fiftycents: { type: GraphQLFloat },
-                twentycents: { type: GraphQLFloat },
-                tencents: { type: GraphQLFloat },
-                fivecents: { type: GraphQLFloat },
-                twocents: { type: GraphQLFloat },
-                onecents: { type: GraphQLFloat }
+                member: { type: new GraphQLNonNull(GraphQLID) },
+                fifty: { type: new GraphQLNonNull(GraphQLInt) },
+                twenty: { type: new GraphQLNonNull(GraphQLInt) },
+                ten: { type: new GraphQLNonNull(GraphQLInt) },
+                five: { type: new GraphQLNonNull(GraphQLInt) },
+                two: { type: new GraphQLNonNull(GraphQLInt) },
+                one: { type: new GraphQLNonNull(GraphQLInt) },
+                fiftycents: { type: new GraphQLNonNull(GraphQLInt) },
+                twentycents: { type: new GraphQLNonNull(GraphQLInt) },
+                tencents: { type: new GraphQLNonNull(GraphQLInt) },
+                fivecents: { type: new GraphQLNonNull(GraphQLInt) },
+                twocents: { type: new GraphQLNonNull(GraphQLInt) },
+                onecents: { type: new GraphQLNonNull(GraphQLInt) }
             },
             resolve(parent, args) {
                 var sum = args.fifty * 50 + args.twenty * 20 + args.ten * 10 + args.five * 5 + args.two * 2 + args.one * 1 + args.fiftycents * 0.5 + args.twentycents * 0.2 +
@@ -372,6 +380,137 @@ const MutationType = new GraphQLObjectType({
         /**
          * 
          * 
+         * Mutation offer
+         * 
+         * 
+         */
+        addOffer: {
+            type: OfferType,
+            args: {
+                name: {
+                    type: new GraphQLNonNull(GraphQLString),
+                    description: "Correspond au nom de l'offre."
+                },
+                active: {
+                    type: new GraphQLNonNull(GraphQLBoolean),
+                    description: "Si vrai, l'offre est active."
+                },
+                price: {
+                    type: new GraphQLNonNull(GraphQLFloat),
+                    description: "Correspond au prix de l'offre."
+                },
+                products: {
+                    type: new GraphQLNonNull(new GraphQLList(ProductMapInputType)),
+                    description: "Liste contenant les identifiants des produits qui concerne l'offre.",
+                },
+                daily: {
+                    type: new GraphQLNonNull(GraphQLBoolean),
+                    description: "daily = quotidien donc si vrai, c'est une offre qui se fait par rapport à l'heure."
+                },
+                members_exclusivity: {
+                    type: new GraphQLNonNull(GraphQLBoolean),
+                    description: "Si vrai, c'est une offre exclusive aux adhérents."
+                },
+                startOffer: {
+                    type: new GraphQLNonNull(GraphQLString),
+                    description: "Correspond à la date/à l'heure de début de l'offre."
+                },
+                endOffer: {
+                    type: new GraphQLNonNull(GraphQLString),
+                    description: "Correspond à la date/à l'heure de fin de l'offre."
+                }
+            },
+            resolve(parent, args) {
+                const productArray = JSON.parse(JSON.stringify(args.products));
+                var i = 0;
+                var productmap_id = [];
+                while (i < productArray.length) {
+                    let productmap = new ProductMap({
+                        _id: mongoose.Types.ObjectId(),
+                        product: productArray[i].product,
+                        quantity: productArray[i].quantity
+                    })
+                    productmap.save();
+                    productmap_id.push(productmap._id);
+                    i++;
+                }
+                let offer = new Offer({
+                    _id: mongoose.Types.ObjectId(),
+                    name: args.name,
+                    active: args.active,
+                    price: args.price,
+                    products: productmap_id,
+                    daily: args.daily,
+                    members_exclusivity: args.members_exclusivity,
+                    startOffer: args.startOffer,
+                    endOffer: args.endOffer
+                })
+                return offer.save()
+            }
+        },
+        updateNameOffer: {
+            type: OfferType,
+            args: {
+                _id: { type: new GraphQLNonNull(GraphQLString) },
+                name: { type: new GraphQLNonNull(GraphQLString) }
+            },
+            resolve(parent, args) {
+                return Offer.findByIdAndUpdate(args._id, { $set: { "name": args.name } }, { new: true, useFindAndModify: false });
+            }
+        },
+        updateActiveOffer: {
+            type: OfferType,
+            args: {
+                _id: { type: new GraphQLNonNull(GraphQLString) },
+                active: { type: new GraphQLNonNull(GraphQLBoolean) }
+            },
+            resolve(parent, args) {
+                return Offer.findByIdAndUpdate(args._id, { $set: { "active": args.active } }, { new: true, useFindAndModify: false });
+            }
+        },
+        addProductsOffer: {
+            type: OfferType,
+            args: {
+                _id: { type: new GraphQLNonNull(GraphQLString) },
+                products: { type: new GraphQLNonNull(new GraphQLList(ProductMapInputType)) }
+            },
+            resolve(parent, args) {
+                const productArray = JSON.parse(JSON.stringify(args.products));
+                var i = 0;
+                var productmap_id = [];
+                while (i < productArray.length) {
+                    let productmap = new ProductMap({
+                        _id: mongoose.Types.ObjectId(),
+                        product: productArray[i].product,
+                        quantity: productArray[i].quantity
+                    })
+                    productmap.save();
+                    productmap_id.push(productmap._id);
+                    i++;
+                }
+                return Offer.findByIdAndUpdate(args._id, { $push: { "products": productmap_id } }, { new: true, useFindAndModify: false });
+            }
+        },
+        removeProductsOffer: {
+            type: OfferType,
+            args: {
+                _id: { type: new GraphQLNonNull(GraphQLString) },
+                products: { type: new GraphQLNonNull(new GraphQLList(GraphQLString)) }
+            },
+            resolve(parent, args) {
+                const productArray = JSON.parse(JSON.stringify(args.products));
+                console.log(productArray)
+                var i = 0;
+                while (i < productArray.length) {
+                    ProductMap.findByIdAndDelete(productArray[i]);
+                    i++;
+                }
+                return Offer.findByIdAndUpdate(args._id, { $pullAll: { "products": args.products } }, { new: true, useFindAndModify: false });
+            }
+        },
+        /**
+         * 
+         * 
          * Mutation price
          * 
          * 
@@ -379,9 +518,9 @@ const MutationType = new GraphQLObjectType({
         addPrice: {
             type: PriceType,
             args: {
-                name: { type: GraphQLString },
-                price: { type: GraphQLFloat },
-                active: { type: GraphQLBoolean }
+                name: { type: new GraphQLNonNull(GraphQLString) },
+                price: { type: new GraphQLNonNull(GraphQLFloat) },
+                active: { type: new GraphQLNonNull(GraphQLBoolean) }
             },
             resolve(parent, args) {
                 let price = new Price({
@@ -442,9 +581,9 @@ const MutationType = new GraphQLObjectType({
         addProduct: {
             type: ProductType,
             args: {
-                barcode: { type: GraphQLString },
-                name: { type: GraphQLString },
-                selling_price: { type: GraphQLFloat }
+                barcode: { type: new GraphQLNonNull(GraphQLString) },
+                name: { type: new GraphQLNonNull(GraphQLString) },
+                selling_price: { type: new GraphQLNonNull(GraphQLFloat) }
             },
             resolve(parent, args) {
                 let product = new Product({
@@ -507,8 +646,8 @@ const MutationType = new GraphQLObjectType({
             args: {
                 name: { type: new GraphQLNonNull(GraphQLString) },
                 address: { type: new GraphQLNonNull(GraphQLString) },
-                phone: { type: GraphQLString },
-                email: { type: GraphQLString }
+                phone: { type: new GraphQLNonNull(GraphQLString) },
+                email: { type: new GraphQLNonNull(GraphQLString) }
             },
             resolve(parent, args) {
                 let provider = new Provider({
@@ -580,9 +719,9 @@ const MutationType = new GraphQLObjectType({
         addReduction: {
             type: ReductionType,
             args: {
-                name: { type: GraphQLString },
-                active: { type: GraphQLBoolean },
-                rate: { type: GraphQLFloat },
+                name: { type: new GraphQLNonNull(GraphQLString) },
+                active: { type: new GraphQLNonNull(GraphQLBoolean) },
+                rate: { type: new GraphQLNonNull(GraphQLFloat) },
                 products: { type: new GraphQLList(GraphQLID) }
             },
             resolve(parent, args) {
@@ -646,10 +785,10 @@ const MutationType = new GraphQLObjectType({
         addSale: {
             type: SaleType,
             args: {
-                seller: { type: GraphQLString },
-                buyer: { type: GraphQLString },
+                seller: { type: new GraphQLNonNull(GraphQLString) },
+                buyer: { type: new GraphQLNonNull(GraphQLString) },
                 products: { type: new GraphQLList(LineSaleInputType) },
-                price_tot: { type: GraphQLFloat }
+                price_tot: { type: new GraphQLNonNull(GraphQLFloat) }
             },
             resolve(parent, args) {
                 const productArray = JSON.parse(JSON.stringify(args.products));
@@ -682,6 +821,60 @@ const MutationType = new GraphQLObjectType({
         /**
          * 
          * 
+         * Mutation settings
+         * 
+         * 
+         */
+        addSettings: {
+            type: SettingsType,
+            args: {
+                photo_directory: { type: new GraphQLNonNull(GraphQLString) },
+                cash_register: { type: new GraphQLNonNull(GraphQLBoolean) },
+                scan: { type: new GraphQLNonNull(GraphQLBoolean) }
+            },
+            resolve(parent, args) {
+                let settings = new Settings({
+                    _id: mongoose.Types.ObjectId(),
+                    photo_directory: args.photo_directory,
+                    cash_register: args.cash_register,
+                    scan: args.scan
+                })
+                return settings.save()
+            }
+        },
+        updatePhotoDirectorySettings: {
+            type: SettingsType,
+            args: {
+                _id: { type: new GraphQLNonNull(GraphQLString) },
+                photo_directory: { type: new GraphQLNonNull(GraphQLString) }
+            },
+            resolve(parent, args) {
+                return Settings.findByIdAndUpdate(args._id, { $set: { "photo_directory": args.photo_directory } }, { new: true, useFindAndModify: false });
+            }
+        },
+        updateCashRegisterSettings: {
+            type: SettingsType,
+            args: {
+                _id: { type: new GraphQLNonNull(GraphQLString) },
+                cash_register: { type: new GraphQLNonNull(GraphQLBoolean) }
+            },
+            resolve(parent, args) {
+                return Settings.findByIdAndUpdate(args._id, { $set: { "cash_register": args.cash_register } }, { new: true, useFindAndModify: false });
+            }
+        },
+        updateScanSettings: {
+            type: SettingsType,
+            args: {
+                _id: { type: new GraphQLNonNull(GraphQLString) },
+                scan: { type: new GraphQLNonNull(GraphQLBoolean) }
+            },
+            resolve(parent, args) {
+                return Settings.findByIdAndUpdate(args._id, { $set: { "scan": args.scan } }, { new: true, useFindAndModify: false });
+            }
+        },
+        /**
+         * 
+         * 
          * Mutation slip
          * 
          * 
@@ -689,16 +882,16 @@ const MutationType = new GraphQLObjectType({
         addSlipCoins: {
             type: SlipCoinsType,
             args: {
-                member: { type: GraphQLID },
-                num_slip: { type: GraphQLString },
-                two: { type: GraphQLFloat },
-                one: { type: GraphQLFloat },
-                fiftycents: { type: GraphQLFloat },
-                twentycents: { type: GraphQLFloat },
-                tencents: { type: GraphQLFloat },
-                fivecents: { type: GraphQLFloat },
-                twocents: { type: GraphQLFloat },
-                onecents: { type: GraphQLFloat }
+                member: { type: new GraphQLNonNull(GraphQLID) },
+                num_slip: { type: new GraphQLNonNull(GraphQLString) },
+                two: { type: new GraphQLNonNull(GraphQLInt) },
+                one: { type: new GraphQLNonNull(GraphQLInt) },
+                fiftycents: { type: new GraphQLNonNull(GraphQLInt) },
+                twentycents: { type: new GraphQLNonNull(GraphQLInt) },
+                tencents: { type: new GraphQLNonNull(GraphQLInt) },
+                fivecents: { type: new GraphQLNonNull(GraphQLInt) },
+                twocents: { type: new GraphQLNonNull(GraphQLInt) },
+                onecents: { type: new GraphQLNonNull(GraphQLInt) }
             },
             resolve(parent, args) {
                 var total_amount = 0;
@@ -750,12 +943,12 @@ const MutationType = new GraphQLObjectType({
         addSlipTicket: {
             type: SlipTicketType,
             args: {
-                member: { type: GraphQLID },
-                num_slip: { type: GraphQLString },
-                fifty: { type: GraphQLFloat },
-                twenty: { type: GraphQLFloat },
-                ten: { type: GraphQLFloat },
-                five: { type: GraphQLFloat }
+                member: { type: new GraphQLNonNull(GraphQLID) },
+                num_slip: { type: new GraphQLNonNull(GraphQLString) },
+                fifty: { type: new GraphQLNonNull(GraphQLInt) },
+                twenty: { type: new GraphQLNonNull(GraphQLInt) },
+                ten: { type: new GraphQLNonNull(GraphQLInt) },
+                five: { type: new GraphQLNonNull(GraphQLInt) }
             },
             resolve(parent, args) {
                 var total_amount = 0;
@@ -798,9 +991,9 @@ const MutationType = new GraphQLObjectType({
         addTraining: {
             type: TrainingType,
             args: {
-                curriculum: { type: GraphQLString },
-                wording: { type: GraphQLString },
-                year: { type: GraphQLInt }
+                curriculum: { type: new GraphQLNonNull(GraphQLString) },
+                wording: { type: new GraphQLNonNull(GraphQLString) },
+                year: { type: new GraphQLNonNull(GraphQLInt) }
             },
             resolve(parent, args) {
                 let training = new Training({

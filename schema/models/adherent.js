@@ -20,7 +20,7 @@ const adherentSchema = new Schema({
     member: Boolean,
     code: Number,
     secret_code: Number,
-    administrateur: Boolean,
+    administrator: Boolean,
     superAdministrator: Boolean
 }, { collection: 'adherent', versionKey: false });
 

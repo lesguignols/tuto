@@ -10,6 +10,10 @@ const BillType = require('./types/BillType');
 const CashFund = require('./models/cashfund');
 const CashFundType = require('./types/CashFundType');
 
+const Offer = require('./models/offer');
+const OfferType = require('./types/OfferType');
+const ProductMap = require('./models/productmap');
+
 const Price = require('./models/price');
 const PriceType = require('./types/PriceType');
 
@@ -24,6 +28,9 @@ const ReductionType = require('./types/ReductionType');
 
 const Sale = require('./models/sale');
 const SaleType = require('./types/SaleType');
+
+const Settings = require('./models/settings');
+const SettingsType = require('./types/SettingsType');
 
 const SlipCoinsType = require('./types/slip/SlipCoinsType');
 const SlipCoins = require('./models/slip/slipcoins');
@@ -264,6 +271,26 @@ const RootQueryType = new GraphQLObjectType({
         /**
          * 
          * 
+         * Query offer
+         * 
+         * 
+         */
+        offerByActive: {
+            type: new GraphQLList(OfferType),
+            args: { active: { type: new GraphQLNonNull(GraphQLBoolean) } },
+            resolve(parent, args) {
+                return Offer.find({ active: args.active });
+            }
+        },
+        allOffers: {
+            type: new GraphQLList(OfferType),
+            resolve(parent, args) {
+                return Offer.find({});
+            }
+        },
+        /**
+         * 
+         * 
          * Query price
          * 
          * 
@@ -358,9 +385,15 @@ const RootQueryType = new GraphQLObjectType({
         },
         reductionByProducts: {
             type: new GraphQLList(ReductionType),
-            args: { products: { type: new GraphQLNonNull(new GraphQLList(GraphQLString)) } },
+            args: { products: { type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLString))) } },
             resolve(parent, args) {
                 return Reduction.find({ products: { "$in": args.products } });
+            }
+        },
+        allReductions: {
+            type: new GraphQLList(ReductionType),
+            resolve(parent, args) {
+                return Reduction.find({});
             }
         },
         /**
@@ -423,6 +456,19 @@ const RootQueryType = new GraphQLObjectType({
             type: new GraphQLList(SaleType),
             resolve(parent, args) {
                 return Sale.find({});
+            }
+        },
+        /**
+         * 
+         * 
+         * Query settings
+         * 
+         * 
+         */
+        settings: {
+            type: SettingsType,
+            resolve(parent, args) {
+                return Settings.findOne({});
             }
         },
         /**
